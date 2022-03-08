@@ -52,8 +52,9 @@ class Fetcher:
 
     @backoff
     def request(self, method, url, data, headers, params=None):
-        response = request(method=method, url=url, data=data, headers=headers, params=params)
-        return response
+        return request(
+            method=method, url=url, data=data, headers=headers, params=params
+        )
 
 
 class LoggingDelegator:
@@ -248,11 +249,7 @@ class FilesystemFetcher(Fetcher):
         """
         url = url.replace(client._base_url, '')
 
-        if json:
-            base_name = ''.join((url[1:], '.json'))
-        else:
-            base_name = url[1:]
-
+        base_name = ''.join((url[1:], '.json')) if json else url[1:]
         path = os.path.join(self.base_path, base_name)
 
         # The exact path might not exist, but check for files with different

@@ -54,7 +54,7 @@ def backoff(f):
         if not self.backoff_enabled:
             return f(self, *args, **kwargs)
 
-        for i in range(0, MAX_ATTEMPTS):
+        for i in range(MAX_ATTEMPTS):
             result = f(self, *args, **kwargs)
 
             if result.status_code != 429:

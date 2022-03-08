@@ -116,7 +116,7 @@ class ObjectCollectionDescriptor:
         self.class_name = class_name
 
         if url_key is None:
-            url_key = name + '_url'
+            url_key = f'{name}_url'
         self.url_key = url_key
 
         if list_class is None:
@@ -364,9 +364,7 @@ class BasePaginatedResponse:
 
     def __iter__(self):
         for i in range(1, self.pages + 1):
-            page = self.page(i)
-            for item in page:
-                yield item
+            yield from self.page(i)
 
 
 class PaginatedList(BasePaginatedResponse):
@@ -389,12 +387,12 @@ class Wantlist(PaginatedList):
             'notes_public': notes_public,
             'rating': rating,
         }
-        self.client._put(self.url + '/' + str(release_id), omit_none(data))
+        self.client._put(f'{self.url}/{str(release_id)}', omit_none(data))
         self._invalidate()
 
     def remove(self, release):
         release_id = release.id if isinstance(release, Release) else release
-        self.client._delete(self.url + '/' + str(release_id))
+        self.client._delete(f'{self.url}/{str(release_id)}')
         self._invalidate()
 
 
@@ -416,7 +414,10 @@ class Inventory(PaginatedList):
             "weight": weight,
             "format_quantity": format_quantity,
         }
-        self.client._post(self.client._base_url + '/marketplace/listings', omit_none(data))
+        self.client._post(
+            f'{self.client._base_url}/marketplace/listings', omit_none(data)
+        )
+
         self._invalidate()
 
 
@@ -501,24 +502,21 @@ class Release(PrimaryAPIObject):
 
     @property
     def master(self):
-        master_id = self.fetch('master_id')
-        if master_id:
+        if master_id := self.fetch('master_id'):
             return Master(self.client, {'id': master_id})
         else:
             return None
 
     @property
     def marketplace_stats(self):
-        release_id = self.fetch('id')
-        if release_id:
+        if release_id := self.fetch('id'):
             return MarketplaceStats(self.client, {'id': release_id})
         else:
             return None
 
     @property
     def price_suggestions(self):
-        release_id = self.fetch('id')
-        if release_id:
+        if release_id := self.fetch('id'):
             return PriceSuggestions(self.client, {'id': release_id})
         else:
             return None

@@ -109,10 +109,7 @@ class UtilsTestCase(DiscogsClientTestCase):
             def succeeds_after_x_calls(self):
                 nonlocal call_count
                 call_count += 1
-                if call_count < 3:
-                    return mock_ratelimited_response
-                else:
-                    return mock_ok_response
+                return mock_ratelimited_response if call_count < 3 else mock_ok_response
 
             @backoff
             def function_not_decorated_when_disabled(self):

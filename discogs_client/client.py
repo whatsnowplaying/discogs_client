@@ -43,10 +43,12 @@ class Client:
         # Forget existing tokens
         self._fetcher.forget_token()
 
-        params = {}
-        params['User-Agent'] = self.user_agent
-        params['Content-Type'] = 'application/x-www-form-urlencoded'
-        params['Accept'] = 'application/vnd.discogs.v2.plaintext+json'
+        params = {
+            'User-Agent': self.user_agent,
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept': 'application/vnd.discogs.v2.plaintext+json',
+        }
+
         if callback_url:
             params['oauth_callback'] = callback_url
         postdata = urlencode(params)
@@ -69,9 +71,10 @@ class Client:
         """
         self._fetcher.set_verifier(verifier)
 
-        params = {}
-        params['User-Agent'] = self.user_agent
-        params['Accept'] = 'application/vnd.discogs.v2.plaintext+json'
+        params = {
+            'User-Agent': self.user_agent,
+            'Accept': 'application/vnd.discogs.v2.plaintext+json',
+        }
 
         content, status_code = self._fetcher.fetch(self, 'POST', self._access_token_url, headers=params)
         if status_code != 200:
@@ -136,9 +139,7 @@ class Client:
         if query:
             fields['q'] = ' '.join(query)
         return models.MixedPaginatedList(
-            self,
-            update_qs(self._base_url + '/database/search', fields),
-            'results'
+            self, update_qs(f'{self._base_url}/database/search', fields), 'results'
         )
 
     def artist(self, id):
@@ -180,7 +181,7 @@ class Client:
 
     def identity(self):
         """Return a User object representing the OAuth-authorized user."""
-        resp = self._get(self._base_url + '/oauth/identity')
+        resp = self._get(f'{self._base_url}/oauth/identity')
         return models.User(self, resp)
 
     @property

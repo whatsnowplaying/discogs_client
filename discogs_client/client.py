@@ -93,6 +93,7 @@ class Client:
         headers = {
             'Accept-Encoding': 'gzip',
             'User-Agent': self.user_agent,
+            'Accept': 'application/vnd.discogs.v2.plaintext+json',
         }
 
         if data:
